@@ -56,6 +56,7 @@ import hudson.model.queue.QueueTaskFuture;
 import hudson.model.queue.SubTask;
 import hudson.model.queue.SubTaskContributor;
 import hudson.node_monitors.DiskSpaceMonitor;
+import hudson.node_monitors.NodeMonitor;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import hudson.scm.NullSCM;
@@ -1268,8 +1269,11 @@ public abstract class AbstractProject<P extends AbstractProject<P,R>,R extends A
         try {
             workspace.mkdirs();
         } catch (IOException e) {
-            // Can't create workspace dir - Is slave disk full ?
-            new DiskSpaceMonitor().markNodeOfflineIfDiskspaceIsTooLow(build.getBuiltOn().toComputer());
+            // Can't create workspace dir - Is slave disk full or something?
+            // Triggering all the NodeMonitor for the current build node
+            for (NodeMonitor nodeMonitor : NodeMonitor.getAll()) {
+                nodeMonitor.triggerUpdate(build.getBuiltOn().toComputer());
+            }
             throw e;
         }
 

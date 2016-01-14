@@ -106,7 +106,17 @@ public abstract class NodeMonitor implements ExtensionPoint, Describable<NodeMon
     }
 
     /**
+     * @see #triggerUpdate()
+     *
+     * @since TODO
+     */
+    public Thread triggerUpdate(Computer computer) {
+        return getDescriptor().triggerUpdate(computer);
+    }
+
+    /**
      * Obtains all the instances of {@link NodeMonitor}s that are alive.
+     *
      * @since 1.187
      */
     public static List<NodeMonitor> getAll() {

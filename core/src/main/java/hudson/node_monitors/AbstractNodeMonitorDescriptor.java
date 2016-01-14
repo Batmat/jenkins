@@ -249,11 +249,15 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
     /**
      * @see NodeMonitor#triggerUpdate()
      */
-    /*package*/ synchronized Thread triggerUpdate() {
+    /* package */ synchronized Thread triggerUpdate() {
+        return triggerUpdate(null);
+    }
+
+    /* package */ synchronized Thread triggerUpdate(Computer c) {
         if (inProgress != null) {
             if (!inProgress.isAlive()) {
                 LOGGER.log(Level.WARNING, "Previous {0} monitoring activity died without cleaning up after itself",
-                    getDisplayName());
+                        getDisplayName());
                 inProgress = null;
             } else if (System.currentTimeMillis() > inProgressStarted + getMonitoringTimeOut() + 1000) {
                 // maybe it got stuck?
@@ -266,7 +270,7 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
                 return inProgress;
             }
         }
-        final Record t = new Record();
+        final Record t = new Record(c);
         t.start();
         // only store the new thread if we started it
         inProgress = t;
@@ -293,8 +297,11 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
 
         private long timestamp;
 
-        public Record() {
+        private Computer computer;
+
+        public Record(Computer c) {
             super("Monitoring thread for "+getDisplayName()+" started on "+new Date());
+			this.computer = c;
         }
 
         @Override
@@ -302,7 +309,11 @@ public abstract class AbstractNodeMonitorDescriptor<T> extends Descriptor<NodeMo
             try {
                 long startTime = System.currentTimeMillis();
                 String oldName = getName();
-                data=monitor();
+                if (computer != null) {
+                    data.put(computer, monitor(computer));
+                } else {
+                    data = monitor();
+                }
                 setName(oldName);
 
                 timestamp = System.currentTimeMillis();
