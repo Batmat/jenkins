@@ -18,6 +18,8 @@ pipeline {
         jdk 'jdk8'
     }
 
+    agent none
+
     stages {
 
         stage("Build") {
