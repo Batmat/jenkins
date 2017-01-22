@@ -57,7 +57,7 @@ pipeline {
                                 }
                             }
                         },
-                        failFast: FAIL_FAST
+                        failFast: true //FAIL_FAST FIXME
                 )
             }
             post {
