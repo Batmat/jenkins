@@ -9,7 +9,7 @@ pipeline {
     environment {
         RUN_TESTS = false // TEMPORARY!
         FAIL_FAST = true
-        mvnCmd = "mvn -Pdebug -U clean install ${runTests ? '-Dmaven.test.failure.ignore=true' : '-DskipTests'} -V -B -Dmaven.repo.local=${pwd()}/.repository"
+        mvnCmd = "mvn -Pdebug -U clean install ${RUN_TESTS ? '-Dmaven.test.failure.ignore=true' : '-DskipTests'} -V -B -Dmaven.repo.local=${pwd()}/.repository"
     }
 
     // Not strictly required, but better check/fail fast if tools are NOT available
@@ -56,7 +56,8 @@ pipeline {
                                     renameFiles(files, "windows")
                                 }
                             }
-                        }
+                        },
+                        failFast: FAIL_FAST
                 )
             }
             post {
