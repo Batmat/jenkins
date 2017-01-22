@@ -56,7 +56,7 @@ pipeline {
                                     renameFiles(files, "windows")
                                 }
                             }
-                        }, failFast: FAIL_FAST
+                        }, failFast: true // FAIL_FAST
                 )
             }
             post {
