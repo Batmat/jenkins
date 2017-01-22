@@ -9,7 +9,7 @@ pipeline {
     environment {
         RUN_TESTS = false // TEMPORARY!
         FAIL_FAST = true
-        mvnCmd = "mvn -Pdebug -U clean install ${false ? '-Dmaven.test.failure.ignore=true' : '-DskipTests'} -V -B -Dmaven.repo.local=${pwd()}/.repository"
+        mvnCmd = "mvn -Pdebug -U clean install"// ${false ? '-Dmaven.test.failure.ignore=true' : '-DskipTests'} -V -B -Dmaven.repo.local=${pwd()}/.repository"
     }
 
     // Not strictly required, but better check/fail fast if tools are NOT available
@@ -34,7 +34,7 @@ pipeline {
                         "Linux": {
                             node('linux') {
 
-                                withMaven(jdk: 'jdk8', maven: 'mvn') {
+                                withMaven(jdk: 'jdk8', maven: 'mvn', mavenLocalRepo:'.repository') {
                                     sh mvnCmd
                                 }
 
@@ -47,7 +47,7 @@ pipeline {
                         "Windows": {
                             node('windows') {
 
-                                withMaven(jdk: 'jdk8', maven: 'mvn') {
+                                withMaven(jdk: 'jdk8', maven: 'mvn', mavenLocalRepo:'.repository') {
                                     bat "$mvnCmd -Duser.name=yay" // INFRA-1032 workaround
                                 }
 
@@ -56,8 +56,7 @@ pipeline {
                                     renameFiles(files, "windows")
                                 }
                             }
-                        },
-                        failFast: true //FAIL_FAST FIXME
+                        }, failFast: FAIL_FAST
                 )
             }
             post {
