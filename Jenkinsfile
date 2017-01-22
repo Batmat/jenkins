@@ -21,9 +21,11 @@ pipeline {
     stages {
 
         stage("Build") {
+            /*
             options {
                 timeout(time: 3, unit: 'HOURS')
             }
+            */
             steps {
 
                 parallel(
